@@ -396,4 +396,64 @@ describe('components › mapToProps', () => {
       expect(document.querySelector('#root .bar .counter').innerHTML).to.equal('12');
     });
   });
+
+  describe('Region context', function () {
+    const CoreRootComponent = createComponent({
+      render() {
+        return (
+          <div>
+            <Region name="sidebar" />
+          </div>
+        );
+      }
+    });
+
+    const CoreApp = createApp({
+      name: 'CoreAppName',
+      appId: 'Core',
+      component: CoreRootComponent,
+    });
+
+    const WidgetComponent = createComponent({
+      render() {
+        console.log(this.context);
+        const { regionName } = this.props;
+
+        return (
+          <div>
+            <div className="rendered">Yes</div>
+            <div className="regionName">{regionName}</div>
+          </div>
+        );
+      }
+    });
+
+    const WidgetRootComponent = mapToProps({
+      region(region) {
+        return {
+          regionName: (region && typeof region.name !== 'undefined')
+            ? region.name
+            : 'n/a',
+        };
+      }
+    })(WidgetComponent);
+
+    const WidgetApp = createApp({
+      name: 'WidgetAppName',
+      appId: 'Widget',
+      component: WidgetRootComponent
+    });
+
+    it.only('passes region name to rendered widget', function () {
+      window.app = new CoreApp();
+
+      const widget = new WidgetApp();
+      widget.setRegion('sidebar');
+
+      render(window.app, document.getElementById('root'));
+
+      expect(document.querySelector('#root .rendered').innerHTML).to.equal('Yes');
+      expect(document.querySelector('#root .regionName').innerHTML).to.equal('sidebar');
+    });
+  });
 });

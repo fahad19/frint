@@ -19,6 +19,7 @@ export default function mapToProps(opts = {}) {
     services: {},
     shared: () => {},
     state: () => {},
+    region: () => {},
     ...opts,
   };
 
@@ -41,6 +42,7 @@ export default function mapToProps(opts = {}) {
       componentWillMount() {
         this.storeSubscriptions = {};
 
+        console.log('context', this.context);
         this.context.app.readableApps.forEach((readableAppName) => {
           const readableAppStore = this.context.app.getStore(readableAppName);
 
@@ -92,6 +94,7 @@ export default function mapToProps(opts = {}) {
 
         const combinedMapStateToProps = (...args) => {
           return {
+            ...options.region(),
             ...options.state(...args),
             ...options.shared(this.state.readableStores),
             ...mappedAppToProps,

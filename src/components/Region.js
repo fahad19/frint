@@ -44,12 +44,13 @@ export default React.createClass({
 
   componentWillMount() {
     const observable = getObservable();
+    const regionName = this.props.name;
 
     this.subscription = observable.subscribe({
       // @TODO: this can be optimized further
       next: () => {
         this.setState({
-          list: getWidgets(this.props.name)
+          list: getWidgets(regionName)
         }, () => {
           this.state.list.forEach((widget) => {
             if (!isRootAppAvailable()) {
@@ -91,10 +92,22 @@ export default React.createClass({
                 widget.beforeUnmount();
               },
 
+              getChildContext() {
+                return {
+                  regionContext: {
+                    name: regionName
+                  }
+                };
+              },
+
               render() {
                 return <WidgetComponent />;
               }
             });
+
+            WrapperComponent.childContextTypes = {
+              regionContext: PropTypes.object
+            };
 
             const listForRendering = [...this.state.listForRendering, {
               appName,
@@ -107,7 +120,7 @@ export default React.createClass({
         });
       },
       error: (err) => {
-        console.warn(`Subscription error for <Region name="${this.props.name}" />:`, err);
+        console.warn(`Subscription error for <Region name="${regionName}" />:`, err);
       }
     });
   },

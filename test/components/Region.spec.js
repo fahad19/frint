@@ -1,11 +1,14 @@
-/* global afterEach, beforeEach, describe, it, window, document */
+/* global afterEach, beforeEach, describe, it, window, document, resetDOM */
 import { expect } from 'chai';
 import React from 'react';
 
-import createApp from '../../src/createApp';
-import createComponent from '../../src/createComponent';
-import Region from '../../src/components/Region';
-import render from '../../src/render';
+import {
+  createApp,
+  createComponent,
+  Region,
+  render,
+  mapToProps,
+} from '../../src';
 
 describe('components › Region', () => {
   function generateCoreAppTemplate(appOptions = {}, regionName) {
@@ -42,16 +45,15 @@ describe('components › Region', () => {
   }
 
   afterEach(() => {
-    delete window.app;
-    document.getElementById('root').innerHTML = '';
+    resetDOM();
   });
 
-  it('fails to mount when the "name" prop is missing (unable to set observable)', () => {
+  it('fails to mount when the "name" prop is missing (unable to set observable)', function () {
     window.app = generateCoreAppTemplate();
     expect(() => render(window.app, document.getElementById('root'))).to.throw(TypeError);
   });
 
-  it('renders properly the region and renders a widget on it', () => {
+  it('renders properly the region and renders a widget on it', function () {
     window.app = generateCoreAppTemplate(undefined, 'myRegionName');
     render(window.app, document.getElementById('root'));
 
@@ -60,7 +62,7 @@ describe('components › Region', () => {
     expect(document.querySelector('#root .myWidgetComponent').textContent).to.be.eql('app1 - myWidgetName');
   });
 
-  it('renders properly the region and renders two widgets on it', () => {
+  it('renders properly the region and renders two widgets on it', function () {
     window.app = generateCoreAppTemplate(undefined, 'myRegionName');
     render(window.app, document.getElementById('root'));
 
@@ -72,7 +74,7 @@ describe('components › Region', () => {
     expect(document.querySelectorAll('#root .myWidgetComponent')[1].textContent).to.be.eql('app2 - myWidgetName2');
   });
 
-  it('renders properly the region and renders two widgets on it, with the same name and different appNames', () => {
+  it('renders properly the region and renders two widgets on it, with the same name and different appNames', function () {
     window.app = generateCoreAppTemplate(undefined, 'myRegionName');
     render(window.app, document.getElementById('root'));
 
